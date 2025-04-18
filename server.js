@@ -6,8 +6,15 @@ const { connectDatabase } = require("./utils/database");
 
 const app = express();
 
+const allowedOrigin = process.env.FRONTEND_URL;
+
 // Middleware
-app.use(cors());
+app.use(cors( {
+  origin: allowedOrigin,
+  credentials: true,
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}));
+
 app.use(express.json());
 
 // Connect to database (if using MongoDB)
