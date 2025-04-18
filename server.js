@@ -11,7 +11,6 @@ const allowedOrigin = process.env.FRONTEND_URL;
 // Middleware
 app.use(cors( {
   origin: allowedOrigin,
-  credentials: true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }));
 
