@@ -1,8 +1,8 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const apiRoutes = require('./routes/api');
-const { connectDatabase } = require('./utils/database');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const apiRoutes = require("./routes/api");
+const { connectDatabase } = require("./utils/database");
 
 const app = express();
 
@@ -16,16 +16,17 @@ if (process.env.MONGODB_URI) {
 }
 
 // API Routes
-app.use('/api', apiRoutes);
-
+app.use("/api", apiRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Server error: ' + err.message });
+  res.status(500).json({ error: "Server error: " + err.message });
 });
 
-
+app.get("/", (req, res) => {
+  res.status(200).send("Welcome to DegreeNFT Backend Server !!!");
+});
 
 const PORT = process.env.PORT || 3001;
 
