@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const connectDatabase = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
+      dbName: 'DegreeNft',
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
