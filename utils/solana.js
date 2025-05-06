@@ -8,13 +8,6 @@
 // const { useWallet } = require('@solana/wallet-adapter-react');
 
 
-
-// // Get admin keypair from environment variables
-// function getAdminKeypair() {
-//   if (!process.env.ADMIN_SECRET_KEY) {
-//     console.warn('Admin secret key not found in environment variables. Generating temporary keypair.');
-//     return Keypair.generate();
-//   }
   
 //   const secretKey = bs58.decode(process.env.ADMIN_SECRET_KEY);
 //   return Keypair.fromSecretKey(secretKey);
