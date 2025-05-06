@@ -35,8 +35,3 @@
   
   
 
-
-// module.exports = {
-//   getAdminKeypair,
-//   createUmiInstance
-// };
