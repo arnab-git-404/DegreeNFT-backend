@@ -27,9 +27,7 @@
 //   //  const { wallet } = useWallet();
 //   //   const umi = createUmi(endpoint);
 
-//   //   if (wallet.publicKey) {
 //   //     // Use walletAdapterIdentity instead of signerIdentity
-//   //     return umi.use(walletAdapterIdentity(wallet));
 //   //   }
 
 //   //   return umi;
