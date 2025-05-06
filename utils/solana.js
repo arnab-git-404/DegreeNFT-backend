@@ -12,9 +12,6 @@
 //   const secretKey = bs58.decode(process.env.ADMIN_SECRET_KEY);
 //   return Keypair.fromSecretKey(secretKey);
 // }
-
-// // Create and configure Umi instance
-// function createUmiInstance() {
   
   
 
