@@ -27,8 +27,6 @@
 //   //  const { wallet } = useWallet();
 //   //   const umi = createUmi(endpoint);
 
-//   //     // Use walletAdapterIdentity instead of signerIdentity
-//   //   }
 
 //   //   return umi;
   
