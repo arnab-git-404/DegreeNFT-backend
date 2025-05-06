@@ -10,7 +10,7 @@ exports.batchUpload = async (req, res, next) => {
 
   res
   .status(200)
-  .json({ message: "This Function is in the early Stage of Development." });
+  .json({ message: "This Function is in the early Stage of Development..." });
       
 };
 
