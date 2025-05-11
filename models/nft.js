@@ -59,7 +59,7 @@ const NftSchema = new mongoose.Schema({
   confirmationDeadline: {
     type: Date,
     default: function() {
-      // Set deadline to 7 days fro
+      // Set deadline to 7 days
       const deadline = new Date();
       deadline.setDate(deadline.getDate() + 7);
       return deadline;
