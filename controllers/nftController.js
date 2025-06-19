@@ -294,11 +294,11 @@ exports.getMintedNfts = async (req, res) => {
 
 exports.createReport = async (req, res) =>{
 
-  const { studentWallet, nftIpfsHash, reportType, reportDetails  } = req.body;
+  const { universityWallet, studentWallet, nftIpfsHash, reportType, reportDetails  } = req.body;
 
   try {
     
-    if (!studentWallet || !reportType || !reportDetails) {
+    if (!universityWallet || !studentWallet || !reportType || !reportDetails) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -314,6 +314,7 @@ exports.createReport = async (req, res) =>{
 
     // Create a new report document
     const newReport = new Reports({
+      universityWallet,
       studentWallet,
       nftIpfsHash,
       reportType,

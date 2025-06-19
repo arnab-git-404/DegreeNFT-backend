@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 const ReportSchema = new mongoose.Schema({
     
+  universityWallet: {
+    type: String,
+    required: true,
+  },
   studentWallet: {
     type: String,
     required: true,
   },
-  // universityWallet: {
-  //   type: String,
-  //   required: true,
-  // },
   nftIpfsHash: {
     type: String,
     required: true,
