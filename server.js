@@ -9,10 +9,12 @@ const app = express();
 const allowedOrigin = process.env.FRONTEND_URL;
 
 // Middleware
-app.use(cors( {
-  origin: allowedOrigin,
-  optionsSuccessStatus: 200 
-}));
+// app.use(cors( {
+//   origin: allowedOrigin,
+//   optionsSuccessStatus: 200 
+// }));
+
+app.use(cors());
 
 app.use(express.json());
 

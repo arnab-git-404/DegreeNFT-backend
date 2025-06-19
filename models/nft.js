@@ -74,7 +74,7 @@ const NftSchema = new mongoose.Schema({
   },
   wasAutoConfirmed: {
     type: Boolean,
-    
+    default: false
   },
   
 

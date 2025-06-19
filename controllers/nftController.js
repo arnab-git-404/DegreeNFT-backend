@@ -92,7 +92,6 @@ exports.confirmCredential = async (req, res) => {
     nft.nftStatus = "CONFIRMED";
     nft.isConfirmed = true;
     nft.confirmedAt = new Date();
-    nft.confirmationDeadline = null;
   
 
     await nft.save();
@@ -108,54 +107,113 @@ exports.confirmCredential = async (req, res) => {
 
 }
 
-exports.checkAuthorization = async (req, res) => {
+// exports.checkAuthorization = async (req, res) => {
 
+//   const { walletAddress } = req.params; // Assuming this is the studentWallet
+
+//   try {
+//     const allocation = await NFT.findOne({ studentWallet: walletAddress });
+
+//     const existingReport = await Reports.findOne({ studentWallet: walletAddress });
+
+//     if (allocation && allocation.allocated && !allocation.minted ) {
+
+//       res.status(200).json({
+//         authorized: true,
+//         existingReport: existingReport ? true : false, // Check if a report exists for this wallet
+//         nftInfo: {
+//           // Send relevant info needed for minting
+//           _id: allocation._id, // Send DB id if needed later
+//           name: allocation.name,
+//           symbol: allocation.symbol,
+//           uri: allocation.uri,
+//           confirmationStatus : allocation.nftStatus,
+//           sellerFeeBasisPoints: allocation.sellerFeeBasisPoints,
+//         },
+
+
+
+//       });
+
+//     } else if (allocation && allocation.minted) {
+      
+//       res.status(200).json({
+//         authorized: false,
+//         message: "All NFT has already been minted for this wallet",
+//       });
+
+//     } else {
+//       res.status(200).json({
+//         authorized: false,
+//         message: "No NFT allocation found for this wallet",
+//       });
+//     }
+
+//     console.log("Authorization api hit ");
+//   } catch (error) {
+//     console.error("Error checking authorization:", error);
+//     res.status(500).json({ error: "Failed to check authorization" });
+//   }
+// };
+
+exports.checkAuthorization = async (req, res) => {
   const { walletAddress } = req.params; // Assuming this is the studentWallet
+  let authorizedStatus = false; // For logging
 
   try {
-    const allocation = await NFT.findOne({ studentWallet: walletAddress });
+    // Check for an NFT that is allocated but not yet minted for this wallet
+    const unmintedAllocation = await NFT.findOne({
+      studentWallet: walletAddress,
+      allocated: true,
+      minted: false,
+    }).sort({ allocatedAt: 1 }); // Optional: sort to get the oldest unminted one first
 
     const existingReport = await Reports.findOne({ studentWallet: walletAddress });
 
-    if (allocation && allocation.allocated && !allocation.minted) {
-
+    if (unmintedAllocation) {
+      // An unminted NFT is available for this wallet
+      authorizedStatus = true;
       res.status(200).json({
         authorized: true,
-        existingReport: existingReport ? true : false, // Check if a report exists for this wallet
+        existingReport: existingReport ? true : false,
         nftInfo: {
-          // Send relevant info needed for minting
-          _id: allocation._id, // Send DB id if needed later
-          name: allocation.name,
-          symbol: allocation.symbol,
-          uri: allocation.uri,
-          confirmationStatus : allocation.nftStatus,
-          sellerFeeBasisPoints: allocation.sellerFeeBasisPoints,
+          // Send relevant info needed for minting this specific NFT
+          _id: unmintedAllocation._id, // Send DB id, crucial for targeting in confirmMint if you adapt it
+          name: unmintedAllocation.name,
+          symbol: unmintedAllocation.symbol,
+          uri: unmintedAllocation.uri,
+          confirmationStatus: unmintedAllocation.nftStatus,
+          sellerFeeBasisPoints: unmintedAllocation.sellerFeeBasisPoints,
         },
-
-
-
       });
-
-    } else if (allocation && allocation.minted) {
-      
-      res.status(200).json({
-        authorized: false,
-        message: "All NFT has already been minted for this wallet",
-      });
-
     } else {
-      res.status(200).json({
-        authorized: false,
-        message: "No NFT allocation found for this wallet",
-      });
-    }
+      // No unminted NFT found. Check if any NFT exists for this wallet to determine the reason.
+      const anyAllocationForWallet = await NFT.findOne({ studentWallet: walletAddress });
 
-    console.log("Authorization api hit ");
+      if (anyAllocationForWallet) {
+        // NFTs exist for this wallet, but none are currently in the 'allocated: true, minted: false' state.
+        // This implies all allocated NFTs are already minted, or there are no NFTs ready for minting.
+        res.status(200).json({
+          authorized: false,
+          existingReport: existingReport ? true : false,
+          message: "All NFTs have already been minted for this wallet, or no new NFTs are ready for minting.",
+        });
+      } else {
+        // No NFT allocations (neither minted nor unminted) found for this wallet at all.
+        res.status(200).json({
+          authorized: false,
+          existingReport: existingReport ? true : false, 
+          message: "No NFT allocation found for this wallet.",
+        });
+      }
+    }
+    console.log(`Authorization check for wallet: ${walletAddress}. Authorized: ${authorizedStatus}`);
   } catch (error) {
     console.error("Error checking authorization:", error);
     res.status(500).json({ error: "Failed to check authorization" });
   }
 };
+
 
 
 exports.confirmMint = async (req, res) => {
@@ -205,9 +263,29 @@ exports.getMintedNfts = async (req, res) => {
   const { walletAddress } = req.params; 
 
   try {
-      const mintedNfts = await NFT.find({ minted: true, studentWallet: walletAddress }); // Find all documents where minted is true for the specific wallet
-      
-      res.status(200).json({ nfts: mintedNfts });
+
+
+      // const mintedNfts = await NFT.find({ minted: true, studentWallet: walletAddress }); // Find all documents where minted is true for the specific wallet
+
+
+      // res.status(200).json({ nfts: mintedNfts });
+
+
+    const mintedNftsFromDb = await NFT.find({ minted: true, studentWallet: walletAddress } );
+
+      const formattedNfts = mintedNftsFromDb.map((nft, index) => ({
+        id: index + 1, // Adding a 1-based index
+        name: nft.name,
+        issueDate: nft.allocatedAt, // Assuming allocatedAt is the issue date
+        mintedDate: nft.mintedAt,
+        nftAddress: nft.nftAddress, // Optionally include other relevant fields
+        symbol: nft.symbol,
+        uri: nft.uri
+      }));
+
+      res.status(200).json({ nfts: formattedNfts });
+
+
   } catch (error) {
       console.error('Error fetching minted NFTs:', error);
       res.status(500).json({ error: 'Failed to fetch minted NFTs' });
@@ -216,7 +294,7 @@ exports.getMintedNfts = async (req, res) => {
 
 exports.createReport = async (req, res) =>{
 
-  const { studentWallet, reportType, reportDetails } = req.body;
+  const { studentWallet, nftIpfsHash, reportType, reportDetails  } = req.body;
 
   try {
     
@@ -237,6 +315,7 @@ exports.createReport = async (req, res) =>{
     // Create a new report document
     const newReport = new Reports({
       studentWallet,
+      nftIpfsHash,
       reportType,
       reportDetails,
       reportedOn: new Date(),

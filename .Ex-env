@@ -2,7 +2,7 @@
 PORT=5001
 NODE_ENV=development
 
-FRONTEND_URL_PROD = https://degree-nft.vercel.app/
+FRONTEND_URL_PRo = https://degree-nft.vercel.app/
 FRONTEND_URL = http://localhost:5173/
 
 # Database (if using MongoDB)
